@@ -34,7 +34,7 @@ export const setError = (payload) => ({
   type: "SET_ERROR",
   payload,
 });
-
+//registro del usuario sin terceros
 export const registerUser = (payload, redirectUrl) => {
   return (dispatch) => {
     axios
@@ -46,5 +46,31 @@ export const registerUser = (payload, redirectUrl) => {
       .catch( error => dispatch(setError(error)));
   };
 };
+
+//login de usuario
+export const loginUser = ({ email, password }, redirectUrl ) => {
+  return (dispatch) => {
+    axios({
+      url: '/auth/sign-in',
+      method:'post',
+      auth: {
+        username: email,
+        password
+      }
+    })
+    .then( ({ data }) =>{
+      document.cookie = `email=${data.user.email}`;
+      document.cookie = `name=${data.user.name}`;
+      document.cookie = `id=${data.user.id}`;
+      document.cookie = `token=${data.user.token}`;
+      dispatch(loginRequest(data.user));
+    })
+    .then(() => {
+      window.location.href = redirectUrl;
+    })
+    .catch( e => dispatch(setError(e)) )
+  }
+};
+
 
 export { setFavorite as default };
